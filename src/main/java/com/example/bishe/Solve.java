@@ -22,6 +22,7 @@ public class Solve {
 
     /**
      * 处理空格和目标滑块没有挨着的情况
+     *
      * @param curRow
      * @param curCol
      */
@@ -41,7 +42,7 @@ public class Solve {
         }
     }
 
-    public void bottomMove(int curRow, int curCol, int targetCol) {
+    public void bottomMove(int curRow, int curCol, int targetRow,  int targetCol) {
         int direction = board.handleNeighbor(curRow, curCol);
         if (direction == 0) {
             notNeighborMove(curRow, curCol);
@@ -49,13 +50,56 @@ public class Solve {
         }
         switch (direction) {
             case 1:
-                board.moveLeftWhenUp();
+                if (curRow < targetRow) {
+                    board.moveDownWhenLow();
+                } else if (curCol > targetCol) {
+                    board.moveLeftWhenUp();
+                } else if (curCol < targetCol) {
+                    board.moveRightWhenUp();
+                }
                 break;
+            case 2:
+                board.moveDownWhenLow();
+                break;
+            case 3:
+                if (curCol > targetCol) {
+                    board.moveLeftWhenLeft();
+                } else if (curRow < targetRow) {
+                    board.moveDownWhenLeft();
+                } else if (curRow == targetRow) {
+                    board.moveRightWhenLeft();
+                }
+                break;
+            case 4:
+                if (curCol < targetCol) {
+                    board.moveRightWhenRight();
+                } else if (curRow < targetRow) {
+                    board.moveDownWhenRight();
+                } else if (curRow == targetRow) {
+                    board.moveLeftWhenRight();
+                }
+                break;
+            case 5:
+                if (curCol > targetCol) {
+                    board.moveLeftWhenUpLeft();
+                } else if (curCol < targetRow){
+                    board.moveRightWhenUpLeft();
+                } else {
 
-
+                }
+                break;
+            case 6:
+                board.moveLeftWhenLowLeft();
+                break;
+            case 7:
+                board.moveLeftWhenUpRight();
+                break;
+            case 8:
+                board.moveDownWhenLowRight();
+                break;
         }
-    }
 
+    }
 
 
 }

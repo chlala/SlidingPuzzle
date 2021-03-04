@@ -67,6 +67,16 @@ public class Board {
     }
 
     /**
+     * 1 2 3
+     * 5 6 7
+     * 0 4 8
+     */
+    public void moveLeftWhenLowLeft() {
+        swapZero(zeroRow - 1, zeroCol);
+        moveLeftWhenLeft();
+    }
+
+    /**
      * 0 2 3
      * 1 6 7
      * 5 4 8
@@ -75,6 +85,7 @@ public class Board {
         swapZero(zeroRow + 1, zeroCol);
         moveLeftWhenLeft();
     }
+
 
     /**
      * 2 0 3
@@ -186,6 +197,55 @@ public class Board {
         moveDownWhenUpLeft();
     }
 
+    /**
+     * 5 1 2
+     * 3 8 0
+     * 4 7 6
+     */
+    public void moveRightWhenRight() {
+        swapZero(zeroRow, zeroCol - 1);
+    }
+
+    /**
+     * 5 1 0
+     * 3 8 2
+     * 4 7 6
+     */
+    public void moveRightWhenUpRight() {
+        swapZero(zeroRow + 1, zeroCol);
+        moveRightWhenRight();
+    }
+
+    /**
+     * 5 0 1
+     * 3 8 2
+     * 4 7 6
+     */
+    public void moveRightWhenUp() {
+        swapZero(zeroRow, zeroCol + 1);
+        moveRightWhenUpRight();
+    }
+
+    /**
+     * 0 5 1
+     * 3 8 2
+     * 4 7 6
+     */
+    public void moveRightWhenUpLeft() {
+        swapZero(zeroRow, zeroCol + 1);
+        moveRightWhenUp();
+    }
+
+    /**
+     * 3 5 1
+     * 0 8 2
+     * 4 7 6
+     */
+    public void moveRightWhenLeft() {
+        swapZero(zeroRow - 1, zeroCol);
+        moveRightWhenUpLeft();
+    }
+
 
     public void print() {
         for (int i = 0; i < m; i++) {
@@ -230,8 +290,6 @@ public class Board {
         }
         return 0;
     }
-
-
 
 
 }
