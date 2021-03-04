@@ -42,19 +42,70 @@ public class Solve {
         }
     }
 
-    public void bottomMove(int curRow, int curCol, int targetRow,  int targetCol) {
+    public void bottomNormalMove(int curRow, int curCol, int targetRow,  int targetCol) {
         int direction = board.handleNeighbor(curRow, curCol);
         if (direction == 0) {
             notNeighborMove(curRow, curCol);
             return;
         }
+//        switch (direction) {
+//            case 1:
+//                 if (curCol > targetCol) {
+//                    board.moveLeftWhenUp();
+//                } else {
+//                    board.moveRightWhenUp();
+//                }
+//                break;
+//            case 2:
+//                board.moveDownWhenLow();
+//                break;
+//            case 3:
+//                if (curCol > targetCol) {
+//                    board.moveLeftWhenLeft();
+//                } else if (curRow < targetRow - 1) {
+//                    board.moveDownWhenLeft();
+//                } else {
+//                    board.moveRightWhenLeft();
+//                }
+//                break;
+//            case 4:
+//                if (curCol < targetCol) {
+//                    board.moveRightWhenRight();
+//                } else if (curRow < targetRow - 1) {
+//                    board.moveDownWhenRight();
+//                } else {
+//                    board.moveLeftWhenRight();
+//                }
+//                break;
+//            case 5:
+//                if (curCol > targetCol) {
+//                    board.moveLeftWhenUpLeft();
+//                } else if (curCol < targetCol){
+//                    board.moveRightWhenUpLeft();
+//                } else {
+//                    if (curRow < targetRow - 1) {
+//                        board.moveDownWhenUpLeft();
+//                    } else {
+//                        board.
+//                    }
+//                }
+//                break;
+//            case 6:
+//                board.moveLeftWhenLowLeft();
+//                break;
+//            case 7:
+//                board.moveLeftWhenUpRight();
+//                break;
+//            case 8:
+//                board.moveDownWhenLowRight();
+//                break;
+//        }
+
         switch (direction) {
             case 1:
-                if (curRow < targetRow) {
-                    board.moveDownWhenLow();
-                } else if (curCol > targetCol) {
+                if (curCol > targetCol) {
                     board.moveLeftWhenUp();
-                } else if (curCol < targetCol) {
+                } else {
                     board.moveRightWhenUp();
                 }
                 break;
@@ -64,28 +115,32 @@ public class Solve {
             case 3:
                 if (curCol > targetCol) {
                     board.moveLeftWhenLeft();
-                } else if (curRow < targetRow) {
+                } else if (curRow < targetRow - 1) {
                     board.moveDownWhenLeft();
-                } else if (curRow == targetRow) {
+                } else {
                     board.moveRightWhenLeft();
                 }
                 break;
             case 4:
                 if (curCol < targetCol) {
                     board.moveRightWhenRight();
-                } else if (curRow < targetRow) {
+                } else if (curRow < targetRow - 1) {
                     board.moveDownWhenRight();
-                } else if (curRow == targetRow) {
+                } else {
                     board.moveLeftWhenRight();
                 }
                 break;
             case 5:
                 if (curCol > targetCol) {
                     board.moveLeftWhenUpLeft();
-                } else if (curCol < targetRow){
+                } else if (curCol < targetCol){
                     board.moveRightWhenUpLeft();
                 } else {
-
+                    if (curRow < targetRow - 1) {
+                        board.moveDownWhenUpLeft();
+                    } else {
+                        board.
+                    }
                 }
                 break;
             case 6:
