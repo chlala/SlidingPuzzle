@@ -1,5 +1,7 @@
 package com.example.bishe;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Board {
@@ -8,6 +10,8 @@ public class Board {
     int[][] board;
     int zeroRow;
     int zeroCol;
+    int step;
+    List<Integer> path;
 
     public Board(int m, int n) {
         this.m = m;
@@ -32,9 +36,7 @@ public class Board {
     }
 
     private void initMove(int times) {
-        int[][] directions = {
-                {-1, 0}, {0, -1}, {1, 0}, {0, 1}
-        };
+        int[][] directions = DirectionUtil.directions;
         int tempRow;
         int tempCol;
         Random random = new Random();
@@ -55,6 +57,7 @@ public class Board {
         board[zeroRow][zeroCol] = temp;
         zeroRow = i;
         zeroCol = j;
+        step++;
     }
 
     /**
@@ -289,6 +292,22 @@ public class Board {
             return 8;
         }
         return 0;
+    }
+
+
+    @Override
+    public Board clone()  {
+        try {
+            Object o = super.clone();
+            Board b = (Board)o;
+            b.board = b.board.clone();
+            b.step = 0;
+            b.path = new ArrayList<>();
+            return b;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

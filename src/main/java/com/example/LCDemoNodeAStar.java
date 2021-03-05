@@ -3,7 +3,7 @@ package com.example;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class LCDemoNodeAplus {
+public class LCDemoNodeAStar {
 
     public int slidingPuzzle(int[][] board) {
         int m = 2;
@@ -133,7 +133,7 @@ public class LCDemoNodeAplus {
                 {9,8,7, 14},
                 {11, 0, 10, 15}
         };
-        LCDemoNodeAplus lcDemoString1 = new LCDemoNodeAplus();
+        LCDemoNodeAStar lcDemoString1 = new LCDemoNodeAStar();
         System.out.println(lcDemoString1.slidingPuzzle(board));
     }
 }

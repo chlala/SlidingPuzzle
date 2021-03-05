@@ -1,5 +1,10 @@
 package com.example.bishe;
 
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
+
 public class Solve {
 
     private Board board;
@@ -101,57 +106,24 @@ public class Solve {
 //                break;
 //        }
 
-        switch (direction) {
-            case 1:
-                if (curCol > targetCol) {
-                    board.moveLeftWhenUp();
-                } else {
-                    board.moveRightWhenUp();
+    }
+
+    public void moveToTarget(Grid targetGrid, int targetNum, Set<Grid> still) {
+        Queue<Board> queue = new PriorityQueue<>(Comparator.comparingInt(b -> b.step));
+        queue.add(board.clone());
+        while (!queue.isEmpty()) {
+            Board cur = queue.poll();
+            if (cur.board[targetGrid.row][targetGrid.col] == targetNum) {
+                return;
+            }
+            for (int i = 0; i < DirectionUtil.directions.length; i++) {
+                int[] direction = DirectionUtil.directions[i];
+                if (DirectionUtil.isValid(new Grid(cur.zeroRow + direction[0], cur.zeroCol + direction[1]), cur.m, cur.n, still)) {
+                    cur.swapZero(direction[0], direction[1]);
+                    cur.path.add(i);
+                    cur.step++;
                 }
-                break;
-            case 2:
-                board.moveDownWhenLow();
-                break;
-            case 3:
-                if (curCol > targetCol) {
-                    board.moveLeftWhenLeft();
-                } else if (curRow < targetRow - 1) {
-                    board.moveDownWhenLeft();
-                } else {
-                    board.moveRightWhenLeft();
-                }
-                break;
-            case 4:
-                if (curCol < targetCol) {
-                    board.moveRightWhenRight();
-                } else if (curRow < targetRow - 1) {
-                    board.moveDownWhenRight();
-                } else {
-                    board.moveLeftWhenRight();
-                }
-                break;
-            case 5:
-                if (curCol > targetCol) {
-                    board.moveLeftWhenUpLeft();
-                } else if (curCol < targetCol){
-                    board.moveRightWhenUpLeft();
-                } else {
-                    if (curRow < targetRow - 1) {
-                        board.moveDownWhenUpLeft();
-                    } else {
-                        board.
-                    }
-                }
-                break;
-            case 6:
-                board.moveLeftWhenLowLeft();
-                break;
-            case 7:
-                board.moveLeftWhenUpRight();
-                break;
-            case 8:
-                board.moveDownWhenLowRight();
-                break;
+            }
         }
 
     }
