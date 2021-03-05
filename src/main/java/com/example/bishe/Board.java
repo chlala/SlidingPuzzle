@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Board {
+public class Board implements Cloneable{
     int m;
     int n;
     int[][] board;
@@ -12,13 +12,20 @@ public class Board {
     int zeroCol;
     int step;
     List<Integer> path;
+    int curM;
+    int curN;
 
     public Board(int m, int n) {
         this.m = m;
         this.n = n;
+        this.curM = m;
+        this.curN = n;
+        this.path = new ArrayList<>();
+
         board = new int[m][n];
         init();
         initMove(m * n * 5);
+        DirectionUtil.initIndexArr(this);
     }
 
     private void init() {
@@ -257,6 +264,7 @@ public class Board {
             }
             System.out.println();
         }
+        System.out.println("---------------");
     }
 
     /**
@@ -301,8 +309,7 @@ public class Board {
             Object o = super.clone();
             Board b = (Board)o;
             b.board = b.board.clone();
-            b.step = 0;
-            b.path = new ArrayList<>();
+            b.path = new ArrayList<>(b.path);
             return b;
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
