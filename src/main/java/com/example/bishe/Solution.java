@@ -285,124 +285,88 @@ public class Solution {
         puzzle.curM--;
     }
 
-    public void rightNormalMove(int curRow, int curCol, int targetRow, int targetCol) {
-        int direction = handleNeighbor(curRow, curCol);
-        if (direction == 0) {
-            rightNotNeighborMove(curRow, curCol);
-            return;
+    public void solveLastCol() {
+        int smallerNum = puzzle.curN - 1;
+        int biggerNum = smallerNum + puzzle.n;
+        int[] smallerIndex = puzzle.getIndex(smallerNum);
+        int[] biggerIndex = puzzle.getIndex(biggerNum);
+        if (smallerIndex[0] != 0) {
+            moveSmallerToFirstRow(smallerIndex[0], smallerIndex[1]);
         }
-        int zeroRow = puzzle.zeroRow;
-        int zeroCol = puzzle.zeroCol;
+        int direction = getReferenceDirection(smallerIndex[0], smallerIndex[1], biggerIndex[0], biggerIndex[1]);
         switch (direction) {
             case 1:
-                if (curRow > targetRow) {
-                    // 当前位置在目标位置的下边
-                    puzzle.restoreSwap(zeroRow + 1, zeroCol);
-                } else {
-                    // 当前位置在目标位置的上边或同一行
-                    if (zeroCol < targetCol - 1) {
-                        // 空格不在倒数第二列
-                        puzzle.restoreSwap(zeroRow, zeroCol + 1);
-                    } else {
-                        puzzle.restoreSwap(zeroRow, zeroCol - 1);
-                    }
-                }
-                break;
-            case 2:
-                if (curRow > targetRow) {
-                    // 当前位置在目标位置的下边
-                    puzzle.restoreSwap(zeroRow - 1, zeroCol);
-                } else if (curRow < targetRow){
-                    // 当前位置在目标位置的上边
-                    if (zeroCol < targetCol - 1) {
-                        // 空格不在倒数第二列
-                        puzzle.restoreSwap(zeroRow, zeroCol + 1);
-                    } else {
-                        puzzle.restoreSwap(zeroRow, zeroCol - 1);
-                    }
-                } else {
-                    // 当前位置在目标位置的同一行
-                    puzzle.restoreSwap(zeroRow, zeroCol + 1);
-                }
-                break;
-            case 3:
-                if (curRow > targetRow) {
-                    // 当前位置在目标位置的下边
-                    puzzle.restoreSwap(zeroRow - 1, zeroCol);
-                } else {
-                    puzzle.restoreSwap(zeroRow + 1, zeroCol);
-                }
-                break;
-            case 4:
-                puzzle.restoreSwap(zeroRow, zeroCol - 1);
-                break;
-            case 5:
-                if (curRow >= targetRow) {
-                    // 当前位置在目标位置的下边或同一行
-                    puzzle.restoreSwap(zeroRow + 1, zeroCol);
-                } else {
-                    puzzle.restoreSwap(zeroRow, zeroCol + 1);
-                }
-                break;
-            case 6:
-                if (curRow > targetRow) {
-                    // 当前位置在目标位置的下边或同一行
-                    puzzle.restoreSwap(zeroRow - 1, zeroCol);
-                } else {
-                    puzzle.restoreSwap(zeroRow, zeroCol + 1);
-                }
-                break;
-            case 7:
-                puzzle.restoreSwap(zeroRow + 1, zeroCol);
-                break;
-            case 8:
-                puzzle.restoreSwap(zeroRow - 1, zeroCol);
-                break;
+
         }
+        puzzle.curN--;
     }
 
-    public void solveLastCol() {
-        int num = puzzle.curN - 1;
-        for (int i = 0; i < puzzle.curM - 1; i++) {
-            while (puzzle.board[i][puzzle.curN - 1] != num) {
-                int[] index = puzzle.getIndex(num);
-                rightNormalMove(index[0], index[1], i, puzzle.curN - 1);
-            }
-            System.out.println("解决:" + num);
-            num += puzzle.n;
+    /**
+     * 执行这个方法是前提条件是当前元素不在第一行
+     *
+     * @param row
+     * @param col
+     * @return
+     */
+    private void moveSmallerToFirstRow(int row, int col) {
+        int direction = getReferenceDirection(puzzle.zeroRow, puzzle.zeroCol, row, col);
+        switch (direction) {
+            case 3:
+                puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                break;
+            case 4:
+                puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                break;
+            case 5:
+                while (puzzle.zeroCol < col) {
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                }
+            case 6:
+                while (puzzle.zeroCol > col) {
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                }
         }
-        System.out.println("开始处理当前最右一个");
-//        if (puzzle.board[puzzle.curM - 1][puzzle.curN - 1] != num) {
-//            // 先将目标元素移动到target的正上方
-//            while (puzzle.board[puzzle.curM - 2][puzzle.curN - 1] != num) {
-//                int[] index = puzzle.getIndex(num);
-//                bottomLastMove(index[0], index[1]);
-//            }
-//            if (puzzle.zeroRow == puzzle.curM - 1 && puzzle.zeroCol == puzzle.curN - 1) {
-//                // 当前位置下方正好是空格
-//                puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
-//            } else {
-//                for (int j = puzzle.zeroCol - 1; j >= 0; j--) {
-//                    puzzle.restoreSwap(puzzle.zeroRow, j);
-//                }
-//                for (int i = puzzle.zeroRow + 1; i < puzzle.curM; i++) {
-//                    puzzle.restoreSwap(i, 0);
-//                }
-//                for (int j = 1; j < puzzle.curN; j++) {
-//                    puzzle.restoreSwap(puzzle.zeroRow, j);
-//                }
-//                // 将目标元素归位
-//                puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
-//                // 将左边，左上移回去
-//                puzzle.restoreSwap(puzzle.curM - 2, puzzle.curN - 2);
-//                puzzle.restoreSwap(puzzle.curM - 1, puzzle.curN - 2);
-//                for (int j = puzzle.curN - 3; j >= 0; j--) {
-//                    puzzle.restoreSwap(puzzle.curM - 1, j);
-//                }
-//                puzzle.restoreSwap(puzzle.curM - 2, 0);
-//            }
-//        }
-        puzzle.curN--;
+        puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+    }
+
+    /**
+     * 1:当前位置在参考位置的正上方 2:正下 3:正左 4:正右 5:左上 6:左下 7:右上 8:右下
+     *
+     * @param referenceRow
+     * @param referenceCol
+     * @param curRow
+     * @param curCol
+     * @return
+     */
+    private int getReferenceDirection(int referenceRow, int referenceCol, int curRow, int curCol) {
+        if (curRow < referenceRow && curCol == referenceCol) {
+            return 1;
+        }
+        if (curRow > referenceRow && curCol == referenceCol) {
+            return 2;
+        }
+        if (curRow == referenceRow && curCol < referenceCol) {
+            return 3;
+        }
+        if (curRow == referenceRow && curCol > referenceCol) {
+            return 4;
+        }
+
+        if (curRow < referenceRow && curCol < referenceCol) {
+            return 5;
+        }
+        if (curRow > referenceRow && curCol < referenceCol) {
+            return 6;
+        }
+        if (curRow < referenceRow) {
+            return 7;
+        }
+        if (curRow > referenceRow) {
+            return 8;
+        }
+        return 0;
     }
 
 
