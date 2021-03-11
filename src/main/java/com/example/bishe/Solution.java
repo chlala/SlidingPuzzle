@@ -333,7 +333,7 @@ public class Solution {
     }
 
     /**
-     * 执行方法的前提是两个数不挨着，要把他们移动到挨在一起
+     * 把两个数移动到挨在一起
      */
     private void moveTwoNumNeighbor(int smallerNum, int biggerNum) {
         int[] smallerIndex = puzzle.getIndex(smallerNum);
@@ -344,11 +344,11 @@ public class Solution {
         // TODO:方位
         int direction = getReferenceDirection(smallerIndex[0], smallerIndex[1], biggerIndex[0], biggerIndex[1]);
         switch (direction) {
-            // 大的数在小的的正右边
             case 1:
+                // 大的数在小的的正右边
                 handleMoveTwoNumberNeighborWhenLine(smallerIndex);
-            // 大的数在小的的正左边
             case 2:
+                // 大的数在小的的正左边
                 if (smallerIndex[1] == biggerIndex[1] + 1) {
                     // 两个数挨着但顺序反了
                     puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
@@ -366,6 +366,40 @@ public class Solution {
                     handleMoveTwoNumberNeighborWhenLine(smallerIndex);
                 }
             case 3:
+                // 大的数在第二行并且在小的数的左边,要做的事是将大的数移动到第一行，走case2逻辑
+                if (puzzle.zeroRow == 0 && puzzle.zeroCol < biggerIndex[1]) {
+                    // 空格在第一行并且在大的数的左边
+                    while (puzzle.zeroCol < biggerIndex[1]) {
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                    }
+                } else if (puzzle.zeroRow == 0 && puzzle.zeroCol == biggerIndex[1]) {
+                    // 空格在大的数的正上方
+                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+                } else if (puzzle.zeroRow == 1 && puzzle.zeroCol < biggerIndex[1]) {
+                    // 空格在第二行并且在大的数的左边，将空格移动到第一行去，走上一个if逻辑
+                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                } else if (puzzle.zeroRow == 0 && puzzle.zeroCol > biggerIndex[1] && puzzle.zeroCol < smallerIndex[1]) {
+                    // 空格在第一行并且在两个数的中间
+                    while (puzzle.zeroCol > biggerIndex[1]) {
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                    }
+                } else if (puzzle.zeroRow == 1 && puzzle.zeroCol > biggerIndex[1] && puzzle.zeroCol < smallerIndex[1]) {
+                    // 空格在第二行并且在两个数的中间，将空格移到第一行去，走上一个if逻辑
+                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                } else if (puzzle.zeroRow == 0 && puzzle.zeroCol > smallerIndex[1]) {
+                    // 空格在第一行并且在小的数的右边，将空格移动到小的数的右边,以走空格在两个数之间的逻辑
+                    while (puzzle.zeroCol > smallerIndex[1]) {
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                    }
+                } else if (puzzle.zeroRow == 1 && puzzle.zeroCol > smallerIndex[1]) {
+                    // 空格在第二行并且在小的数的右边，将空格移到第一行去，以走上个if逻辑
+                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                } else if (puzzle.zeroRow == 1 && puzzle.zeroCol == smallerIndex[1]) {
+                    // 空格在第二行并且在小的数的正下边，以走上个if逻辑
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                }
+            case 4:
+                // 大的数在第二行并且在小的数的右边
 
 
         }
