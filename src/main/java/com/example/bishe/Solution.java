@@ -77,23 +77,6 @@ public class Solution {
         }
     }
 
-    public void rightNotNeighborMove(int curRow, int curCol) {
-        int zeroRow = puzzle.zeroRow;
-        int zeroCol = puzzle.zeroCol;
-        if (zeroCol > curCol) {
-            // 空格在当前考虑的右边
-            puzzle.restoreSwap(zeroRow, zeroCol - 1);
-        } else if (zeroCol < curCol) {
-            // 空格在当前考虑的左边
-            puzzle.restoreSwap(zeroRow, zeroCol + 1);
-        } else if (zeroRow < curRow) {
-            // 空格在当前考虑的正上方，向上移动
-            puzzle.restoreSwap(zeroRow + 1, zeroCol);
-        } else if (zeroRow > curRow) {
-            // 空格在当前考虑的正下方，向下移动
-            puzzle.restoreSwap(zeroRow - 1, zeroCol);
-        }
-    }
 
     public void bottomNormalMove(int curRow, int curCol, int targetRow, int targetCol) {
         int direction = handleNeighbor(curRow, curCol);
@@ -251,6 +234,7 @@ public class Solution {
             System.out.println("解决:" + num);
             num++;
         }
+        // TODO:死循环问题
         System.out.println("开始处理当前最右一个");
         if (puzzle.board[puzzle.curM - 1][puzzle.curN - 1] != num) {
             // 先将目标元素移动到target的正上方
@@ -288,48 +272,32 @@ public class Solution {
     public void solveLastCol() {
         int smallerNum = puzzle.curN - 1;
         int biggerNum = smallerNum + puzzle.n;
-        int[] smallerIndex = puzzle.getIndex(smallerNum);
-        if (smallerIndex[0] != 0) {
-            moveSmallerToFirstRow(smallerIndex[0], smallerIndex[1]);
-        }
-        smallerIndex = puzzle.getIndex(smallerNum);
-        int[] biggerIndex = puzzle.getIndex(biggerNum);
-        int direction = getReferenceDirection(smallerIndex[0], smallerIndex[1], biggerIndex[0], biggerIndex[1]);
-        switch (direction) {
-            case 1:
-
-        }
+        moveSmallerToFirstRow(smallerNum);
+        moveTwoNumNeighbor(smallerNum, biggerNum);
+        moveTwoNumTargetCol(smallerNum, biggerNum);
         puzzle.curN--;
     }
 
-    /**
-     * 执行这个方法是前提条件是当前元素不在第一行
-     *
-     * @param row
-     * @param col
-     * @return
-     */
-    private void moveSmallerToFirstRow(int row, int col) {
-        int direction = getReferenceDirection(puzzle.zeroRow, puzzle.zeroCol, row, col);
-        switch (direction) {
-            case 3:
-                puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
-                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
-                break;
-            case 4:
-                puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
-                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
-                break;
-            case 5:
-                while (puzzle.zeroCol < col) {
-                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
-                }
-            case 6:
-                while (puzzle.zeroCol > col) {
-                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
-                }
+    private void moveSmallerToFirstRow(int num) {
+        int[] index = puzzle.getIndex(num);
+        if (index[0] == 0) {
+            return;
         }
-        puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+        if (puzzle.zeroRow == 0 && puzzle.zeroCol == index[1]) {
+            puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+            return;
+        }
+        if (puzzle.zeroRow == 0) {
+            while (puzzle.zeroCol < index[1]) {
+                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+            }
+            while (puzzle.zeroCol > index[1]) {
+                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+            }
+        } else {
+            puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+        }
+        moveSmallerToFirstRow(num);
     }
 
     /**
@@ -341,142 +309,217 @@ public class Solution {
         if (biggerIndex[0] == 0 && smallerIndex[1] == biggerIndex[1] - 1) {
             return;
         }
-        // TODO:方位
-        int direction = getReferenceDirection(smallerIndex[0], smallerIndex[1], biggerIndex[0], biggerIndex[1]);
+        int direction = getComparePosition(smallerIndex[1], biggerIndex[0], biggerIndex[1]);
         switch (direction) {
             case 1:
-                // 大的数在小的的正右边
                 handleMoveTwoNumberNeighborWhenLine(smallerIndex);
             case 2:
                 // 大的数在小的的正左边
                 if (smallerIndex[1] == biggerIndex[1] + 1) {
                     // 两个数挨着但顺序反了
-                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
-                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
-                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
-                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
-                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
-                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
-                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
-                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
-                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
-                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
-                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+                    boolean fixedMove = false;
+                    if (puzzle.zeroCol < biggerIndex[1]) {
+                        if (puzzle.zeroRow == 1) {
+                            puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                        } else {
+                            while (puzzle.zeroCol < biggerIndex[1]) {
+                                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                            }
+                            fixedMove = true;
+                        }
+                    } else {
+                        if (puzzle.zeroRow == 1) {
+                            puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                        } else {
+                            while (puzzle.zeroCol > smallerIndex[1]) {
+                                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                            }
+                            fixedMove = true;
+                        }
+                    }
+                    if (fixedMove) {
+                        puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                        puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                        puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                        puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                        puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+                    }
                 } else {
                     handleMoveTwoNumberNeighborWhenLine(smallerIndex);
                 }
             case 3:
                 // 大的数在第二行并且在小的数的左边,要做的事是将大的数移动到第一行，走case2逻辑
-                if (puzzle.zeroRow == 0 && puzzle.zeroCol < biggerIndex[1]) {
-                    // 空格在第一行并且在大的数的左边
+                if (puzzle.zeroRow == 1) {
+                    if (puzzle.zeroCol == smallerIndex[1]) {
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                    }
+                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                } else {
                     while (puzzle.zeroCol < biggerIndex[1]) {
                         puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
                     }
-                } else if (puzzle.zeroRow == 0 && puzzle.zeroCol == biggerIndex[1]) {
-                    // 空格在大的数的正上方
-                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
-                } else if (puzzle.zeroRow == 1 && puzzle.zeroCol < biggerIndex[1]) {
-                    // 空格在第二行并且在大的数的左边，将空格移动到第一行去，走上一个if逻辑
-                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
-                } else if (puzzle.zeroRow == 0 && puzzle.zeroCol > biggerIndex[1] && puzzle.zeroCol < smallerIndex[1]) {
-                    // 空格在第一行并且在两个数的中间
                     while (puzzle.zeroCol > biggerIndex[1]) {
-                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
-                    }
-                } else if (puzzle.zeroRow == 1 && puzzle.zeroCol > biggerIndex[1] && puzzle.zeroCol < smallerIndex[1]) {
-                    // 空格在第二行并且在两个数的中间，将空格移到第一行去，走上一个if逻辑
-                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
-                } else if (puzzle.zeroRow == 0 && puzzle.zeroCol > smallerIndex[1]) {
-                    // 空格在第一行并且在小的数的右边，将空格移动到小的数的右边,以走空格在两个数之间的逻辑
-                    while (puzzle.zeroCol > smallerIndex[1]) {
                         puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
                     }
-                } else if (puzzle.zeroRow == 1 && puzzle.zeroCol > smallerIndex[1]) {
-                    // 空格在第二行并且在小的数的右边，将空格移到第一行去，以走上个if逻辑
                     puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
-                } else if (puzzle.zeroRow == 1 && puzzle.zeroCol == smallerIndex[1]) {
-                    // 空格在第二行并且在小的数的正下边，以走上个if逻辑
-                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
                 }
             case 4:
                 // 大的数在第二行并且在小的数的右边
-
-
+                if (puzzle.zeroRow == 0 && puzzle.zeroCol == biggerIndex[1]) {
+                    // 空格在大的数的正上方，将大的数移到第一行，走case1逻辑
+                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+                } else if (puzzle.zeroRow == 0 && puzzle.zeroCol < biggerIndex[1]) {
+                    // 空格在第一行并且在大的数的左边，将空格移动到大的数的正上方，以走上一个if逻辑
+                    while (puzzle.zeroCol < biggerIndex[1]) {
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                    }
+                } else if (puzzle.zeroRow == 1 && puzzle.zeroCol < biggerIndex[1]) {
+                    // 空格在第二行并且在大的数的左边，将空格移动到第一行，以走上一个if逻辑
+                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                } else if (puzzle.zeroRow == 0 && puzzle.zeroCol > biggerIndex[1]) {
+                    // 空格在第一行并且在大的数的右边
+                    while (puzzle.zeroCol > biggerIndex[1]) {
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                    }
+                } else if (puzzle.zeroRow == 1 && puzzle.zeroCol > biggerIndex[1]) {
+                    // 空格在第二行并且在大的数的右边
+                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                }
+            case 5:
+                // 大的数正好在小的数正下边
+                if (puzzle.zeroCol > smallerIndex[1]) {
+                    // 空格在右边
+                    while (puzzle.zeroCol > smallerIndex[1]) {
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                    }
+                } else {
+                    // 空格在左边
+                    while (puzzle.zeroCol < smallerIndex[1]) {
+                        puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                    }
+                }
         }
+        moveTwoNumNeighbor(smallerNum, biggerNum);
     }
 
     private void handleMoveTwoNumberNeighborWhenLine(int[] smallerIndex) {
-        if (puzzle.zeroRow == 0 && puzzle.zeroCol == smallerIndex[1] + 1) {
-            // 空格在第一行并且在小的数的右边
-            puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
-        } else if (puzzle.zeroRow == 1 && puzzle.zeroCol == smallerIndex[1] + 1) {
-            // 空格在小的数的正右下角
-            puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
-        } else if (puzzle.zeroRow == 1 && puzzle.zeroCol <= smallerIndex[1]) {
-            // 空格在第二行并且在小的数的左下边或正下边
+        if (puzzle.zeroRow == 0) {
+            if (puzzle.zeroCol > smallerIndex[1]) {
+                // 空格在第一行且在小的数的右边,可将数往右移动，将空格移动到小的数的左边
+                while (puzzle.zeroCol > smallerIndex[1]) {
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                }
+            } else {
+                puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+            }
+        } else {
+            if (puzzle.zeroCol == smallerIndex[1] + 1) {
+                puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+            }
             while (puzzle.zeroCol <= smallerIndex[1]) {
                 puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
             }
-        } else if (puzzle.zeroRow == 0 && puzzle.zeroCol < smallerIndex[1]) {
-            // 空格在第一行并且在小的数的左边
-            puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
-        } else if (puzzle.zeroRow == 1 && puzzle.zeroCol > smallerIndex[1] + 1) {
-            // 空格在第二行并且在小的数的右下边
-            while (puzzle.zeroCol > smallerIndex[1] + 1) {
+            while (puzzle.zeroCol > smallerIndex[1] - 1) {
                 puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
             }
-        } else if (puzzle.zeroRow == 0 && puzzle.zeroCol > smallerIndex[1]) {
-            // 空格在第一行并且在小的数的右边
-            puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
         }
     }
 
-
     /**
-     * 1:当前位置在参考位置的正上方 2:正下 3:正左 4:正右 5:左上 6:左下 7:右上 8:右下
+     * 将两个挨着并且顺序正确的数移动到目标列
      *
-     * @param referenceRow
-     * @param referenceCol
-     * @param curRow
-     * @param curCol
-     * @return
+     * @param smallerNum
+     * @param biggerNum
      */
-    private int getReferenceDirection(int referenceRow, int referenceCol, int curRow, int curCol) {
-        if (curRow < referenceRow && curCol == referenceCol) {
+    private void moveTwoNumTargetCol(int smallerNum, int biggerNum) {
+        int[] smallerIndex = puzzle.getIndex(smallerNum);
+        int[] biggerIndex = puzzle.getIndex(biggerNum);
+        if (smallerIndex[0] == 0 && smallerIndex[1] == puzzle.curN - 1 && biggerIndex[0] == 1 && biggerIndex[1] == puzzle.curN - 1) {
+            return;
+        }
+        if (puzzle.zeroRow == 1) {
+            if (puzzle.zeroCol == puzzle.curN - 1) {
+                // 空格在最后一个位置
+                puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                // 两个一起归位
+                 if (biggerIndex[1] == puzzle.curN - 1) {
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                }
+            } else {
+                // 将空格移动到最后一个位置
+                while (puzzle.zeroCol < puzzle.curN - 1) {
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                }
+            }
+        } else {
+            if (puzzle.zeroCol < smallerIndex[1]) {
+                // 空格在第一行并且在小的数的左边，将空格移动到第二行
+                puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+            } else {
+                // 空格在第一行并且在大的数的右边
+                while (puzzle.zeroCol > smallerIndex[1]) {
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                }
+            }
+        }
+        moveTwoNumTargetCol(smallerNum, biggerNum);
+    }
+
+    private int getComparePosition(int smallerCol, int biggerRow, int biggerCol) {
+        if (biggerRow == 0 && biggerCol > smallerCol) {
             return 1;
         }
-        if (curRow > referenceRow && curCol == referenceCol) {
+        if (biggerRow == 0 && biggerCol < smallerCol) {
             return 2;
         }
-        if (curRow == referenceRow && curCol < referenceCol) {
+        if (biggerRow == 1 && biggerCol < smallerCol) {
             return 3;
         }
-        if (curRow == referenceRow && curCol > referenceCol) {
+        if (biggerRow == 1 && biggerCol > smallerCol) {
             return 4;
         }
-
-        if (curRow < referenceRow && curCol < referenceCol) {
+        if (biggerRow == 1 && biggerCol == smallerCol) {
             return 5;
-        }
-        if (curRow > referenceRow && curCol < referenceCol) {
-            return 6;
-        }
-        if (curRow < referenceRow) {
-            return 7;
-        }
-        if (curRow > referenceRow) {
-            return 8;
         }
         return 0;
     }
 
+    private void slove2n() {
+        int[][] rotateDirection = new int[][]{
+                {1, 0}, {0, 1}, {-1, 0}, {0, -1}
+        };
+        int index;
+        if (puzzle.zeroRow == 1 && puzzle.zeroCol == 0) {
+            index = 1;
+        } else if (puzzle.zeroRow == 1 && puzzle.zeroCol == 1) {
+            index = 2;
+        } else {
+            index = 3;
+        }
+        while (!(puzzle.board[0][0] == 0 && puzzle.board[0][1] == 1
+                && puzzle.board[1][0] == puzzle.n && puzzle.board[1][1] == puzzle.n + 1)) {
+            puzzle.restoreSwap(puzzle.zeroRow + rotateDirection[index][0],
+                    puzzle.zeroCol + rotateDirection[index][1]);
+            index = (index + 1) % 4;
+        }
+    }
 
     public void solve() {
-//        while (puzzle.curM > 2) {
-//            solveLastRow();
-//            System.out.printf("解决%s行\n", puzzle.m - puzzle.curM);
-//            puzzle.print();
-//        }
-        solveLastCol();
+        while (puzzle.curM > 2) {
+            solveLastRow();
+            System.out.printf("解决%s行\n", puzzle.m - puzzle.curM);
+        }
+        while (puzzle.curN > 2) {
+            solveLastCol();
+            System.out.printf("解决%s列\n", puzzle.n - puzzle.curN);
+        }
+        System.out.println("处理2*2");
+        slove2n();
     }
 }
