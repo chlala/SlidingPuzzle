@@ -14,7 +14,7 @@ public class Client {
 //        System.out.println("打乱步数:" + puzzle.initPath.size());
 //        System.out.println("还原步数:" + puzzle.restorePath.size());
 
-        Puzzle puzzle = new Puzzle(100, 100);
+        Puzzle puzzle = new Puzzle(2, 4);
         try {
             System.out.println("初始化完成:");
             puzzle.print();

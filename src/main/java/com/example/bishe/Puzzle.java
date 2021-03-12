@@ -38,14 +38,14 @@ public class Puzzle {
 
     public Puzzle() {
         this.m = 2;
-        this.n = 2;
+        this.n = 4;
         this.curM = 2;
-        this.curN = 2;
+        this.curN = 4;
         this.initPath = new ArrayList<>();
         this.restorePath = new ArrayList<>();
         board = new int[][]{
-                {1, 3},
-                {0, 2},
+                {2,1,6,3},
+                {0, 5,4,7},
         };
         indexArr = new int[m * n][2];
         for (int i = 0; i < m; i++) {
@@ -125,7 +125,7 @@ public class Puzzle {
 
     public void restoreSwap(int i, int j) {
         swapZero(restorePath, i, j);
-//        print();
+        print();
     }
 
 

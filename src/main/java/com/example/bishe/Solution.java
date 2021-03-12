@@ -310,6 +310,7 @@ public class Solution {
             return;
         }
         int direction = getComparePosition(smallerIndex[1], biggerIndex[0], biggerIndex[1]);
+        System.out.println(smallerNum + " "  + biggerNum + " " + direction);
         switch (direction) {
             case 1:
                 handleMoveTwoNumberNeighborWhenLine(smallerIndex);
@@ -327,7 +328,7 @@ public class Solution {
                             }
                             fixedMove = true;
                         }
-                    } else {
+                    } else if (puzzle.zeroCol > smallerIndex[1]) {
                         if (puzzle.zeroRow == 1) {
                             puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
                         } else {
@@ -335,6 +336,17 @@ public class Solution {
                                 puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
                             }
                             fixedMove = true;
+                        }
+                    } else {
+                        // 空格正好在两个数的下面
+                        if (puzzle.zeroCol == 0) {
+                            while (puzzle.zeroCol <= smallerIndex[1]) {
+                                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                            }
+                        } else {
+                            while (puzzle.zeroCol >= smallerIndex[1]) {
+                                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                            }
                         }
                     }
                     if (fixedMove) {
@@ -351,7 +363,7 @@ public class Solution {
                         puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
                     }
                 } else {
-                    handleMoveTwoNumberNeighborWhenLine(smallerIndex);
+                    handleMoveTwoNumberNeighborWhenLine(biggerIndex);
                 }
             case 3:
                 // 大的数在第二行并且在小的数的左边,要做的事是将大的数移动到第一行，走case2逻辑
@@ -367,7 +379,7 @@ public class Solution {
                     while (puzzle.zeroCol > biggerIndex[1]) {
                         puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
                     }
-                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
                 }
             case 4:
                 // 大的数在第二行并且在小的数的右边
@@ -408,24 +420,24 @@ public class Solution {
         moveTwoNumNeighbor(smallerNum, biggerNum);
     }
 
-    private void handleMoveTwoNumberNeighborWhenLine(int[] smallerIndex) {
+    private void handleMoveTwoNumberNeighborWhenLine(int[] leftIndex) {
         if (puzzle.zeroRow == 0) {
-            if (puzzle.zeroCol > smallerIndex[1]) {
-                // 空格在第一行且在小的数的右边,可将数往右移动，将空格移动到小的数的左边
-                while (puzzle.zeroCol > smallerIndex[1]) {
+            if (puzzle.zeroCol > leftIndex[1]) {
+                while (puzzle.zeroCol > leftIndex[1]) {
                     puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
                 }
             } else {
                 puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
             }
         } else {
-            if (puzzle.zeroCol == smallerIndex[1] + 1) {
+            if (puzzle.zeroCol == leftIndex[1] + 1) {
                 puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                return;
             }
-            while (puzzle.zeroCol <= smallerIndex[1]) {
+            while (puzzle.zeroCol <= leftIndex[1]) {
                 puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
             }
-            while (puzzle.zeroCol > smallerIndex[1] - 1) {
+            while (puzzle.zeroCol > leftIndex[1] - 1) {
                 puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
             }
         }
@@ -448,7 +460,7 @@ public class Solution {
                 // 空格在最后一个位置
                 puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
                 // 两个一起归位
-                 if (biggerIndex[1] == puzzle.curN - 1) {
+                if (biggerIndex[1] == puzzle.curN - 1) {
                     puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
                 }
             } else {
