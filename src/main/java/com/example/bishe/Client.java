@@ -4,24 +4,22 @@ public class Client {
 
     public static void main(String[] args) {
 //        Puzzle puzzle = new Puzzle();
-//        Puzzle puzzle = new Puzzle(10, 10);
-//        System.out.println("初始化完成:");
-//        puzzle.print();
-//        Solution solution = new Solution(puzzle);
-//        solution.solve();
-//        System.out.println("全部归位!");
-//        puzzle.print();
-//        System.out.println("打乱步数:" + puzzle.initPath.size());
-//        System.out.println("还原步数:" + puzzle.restorePath.size());
-
-        Puzzle puzzle = new Puzzle(2, 4);
+        Puzzle puzzle = null;
         try {
-            System.out.println("初始化完成:");
+            for (int i = 0; i < 10; i++) {
+                puzzle = new Puzzle(3, 3);
+//                puzzle = new Puzzle(4, 4);
+                System.out.println("初始化完成:");
+                puzzle.print();
+                Solution solution = new Solution(puzzle);
+                solution.solve();
+                System.out.println("全部归位!");
+                puzzle.print();
+            }
+        } catch (Exception e) {
+            System.out.println("******************最终结果******************");
             puzzle.print();
-            Solution solution = new Solution(puzzle);
-            solution.solve();
-            System.out.println("全部归位!");
-            puzzle.print();
+            e.printStackTrace();
         } finally {
             System.out.println("打乱步数:" + puzzle.initPath.size());
             System.out.println("还原步数:" + puzzle.restorePath.size());
