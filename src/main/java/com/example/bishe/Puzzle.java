@@ -129,7 +129,7 @@ public class Puzzle {
 
     public void restoreSwap(int i, int j) {
         swapZero(restorePath, i, j);
-        print();
+//        print();
     }
 
     public void print() {

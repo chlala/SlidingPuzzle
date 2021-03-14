@@ -178,7 +178,7 @@ public class Solution {
             return;
         }
         System.out.println(direction);
-        // TODO:死循环问题 case1与case5会来回移动，改了case5，似乎已解决
+        // TODO:死循环问题 似乎已解决 还不确定
         switch (direction) {
             case 1:
                 if (curCol == targetCol) {
@@ -213,6 +213,70 @@ public class Solution {
                 }
                 break;
             case 5:
+                if (curCol == puzzle.curN - 1) {
+                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+                } else {
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                }
+            case 6:
+                // 当前位置在目标位置的左侧或同一列
+                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                break;
+            case 7:
+                // 当前位置在目标位置的左侧或同一列
+                puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+                break;
+        }
+    }
+
+    public void bottomLastMove(int num, int targetRow, int targetCol) {
+        int[] index = puzzle.getIndex(num);
+        int direction = handleNeighbor(index[0], index[1]);
+        if (index[0] == targetRow && index[1] == targetCol) {
+            return;
+        }
+        if (direction == 0) {
+            bottomNotNeighborMove(index[0], index[1], targetCol - 1);
+            return;
+        }
+        System.out.println(direction);
+        switch (direction) {
+//            case 2:
+
+
+            case 1:
+                if (index[1] == targetCol) {
+                    // 当前位置在目标位置的同一列,即最后一列
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                } else {
+                    // 当前位置在目标位置的左侧
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
+                }
+                break;
+            case 2:
+            case 8:
+                // 当前位置在目标位置的左侧
+                puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                break;
+            case 3:
+                // 当前位置在目标位置的右侧或同一列
+                if (puzzle.zeroRow < targetRow) {
+                    // 空格不在倒数第二行
+                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+                } else {
+                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+                }
+                break;
+            case 4:
+                if (index[1] < targetCol) {
+                    // 当前位置在目标位置的右侧
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                } else {
+                    // 在同一列
+                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+                }
+                break;
+            case 5:
                 puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
                 break;
             case 6:
@@ -226,6 +290,7 @@ public class Solution {
         }
     }
 
+
     public void solveLastRow() {
         int num = (puzzle.curM - 1) * puzzle.curN;
         for (int j = 0; j < puzzle.curN - 1; j++) {
@@ -237,12 +302,19 @@ public class Solution {
             num++;
         }
         System.out.println("开始处理当前最右一个:" + num);
+        // 直接下移还原
+        if (puzzle.zeroRow == puzzle.curM - 1 && puzzle.zeroCol == puzzle.curN - 1 && puzzle.board[puzzle.curM - 2][puzzle.curN - 1] == num) {
+            puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
+            return;
+        }
         if (puzzle.board[puzzle.curM - 1][puzzle.curN - 1] != num) {
             // 先将目标元素移动到target的正上方
+//            int targetRow = puzzle.curM - 2;
+//            int targetCol = puzzle.curN - 1;
+//            bottomLastMove(num, targetRow, targetCol);
             while (puzzle.board[puzzle.curM - 2][puzzle.curN - 1] != num) {
                 int[] index = puzzle.getIndex(num);
                 bottomLastMove(index[0], index[1]);
-                System.out.println("aa");
             }
             if (puzzle.zeroRow == puzzle.curM - 1 && puzzle.zeroCol == puzzle.curN - 1) {
                 // 当前位置下方正好是空格
@@ -250,15 +322,12 @@ public class Solution {
             } else {
                 for (int j = puzzle.zeroCol - 1; j >= 0; j--) {
                     puzzle.restoreSwap(puzzle.zeroRow, j);
-                    System.out.println("bb");
                 }
                 for (int i = puzzle.zeroRow + 1; i < puzzle.curM; i++) {
                     puzzle.restoreSwap(i, 0);
-                    System.out.println("cc");
                 }
                 for (int j = 1; j < puzzle.curN; j++) {
                     puzzle.restoreSwap(puzzle.zeroRow, j);
-                    System.out.println("dd");
                 }
                 // 将目标元素归位
                 puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
@@ -267,7 +336,6 @@ public class Solution {
                 puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
                 for (int j = puzzle.curN - 3; j >= 0; j--) {
                     puzzle.restoreSwap(puzzle.zeroRow, j);
-                    System.out.println("re");
                 }
                 puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
             }
