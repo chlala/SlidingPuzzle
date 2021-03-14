@@ -86,7 +86,6 @@ public class Solution {
         }
         int zeroRow = puzzle.zeroRow;
         int zeroCol = puzzle.zeroCol;
-        // TODO:死循环问题 case1与case5会来回移动，改了case5，似乎已解决
         switch (direction) {
             case 1:
                 if (curCol > targetCol) {
@@ -178,51 +177,51 @@ public class Solution {
             bottomNotNeighborMove(curRow, curCol, targetCol - 1);
             return;
         }
-        int zeroRow = puzzle.zeroRow;
-        int zeroCol = puzzle.zeroCol;
         System.out.println(direction);
+        // TODO:死循环问题 case1与case5会来回移动，改了case5，似乎已解决
         switch (direction) {
             case 1:
                 if (curCol == targetCol) {
                     // 当前位置在目标位置的同一列,即最后一列
-                    puzzle.restoreSwap(zeroRow, zeroCol - 1);
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
                 } else {
                     // 当前位置在目标位置的左侧
-                    puzzle.restoreSwap(zeroRow, zeroCol + 1);
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
                 }
                 break;
             case 2:
             case 8:
                 // 当前位置在目标位置的左侧
-                puzzle.restoreSwap(zeroRow - 1, zeroCol);
+                puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
                 break;
             case 3:
                 // 当前位置在目标位置的右侧或同一列
-                if (zeroRow < targetRow) {
+                if (puzzle.zeroRow < targetRow) {
                     // 空格不在倒数第二行
-                    puzzle.restoreSwap(zeroRow + 1, zeroCol);
+                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
                 } else {
-                    puzzle.restoreSwap(zeroRow - 1, zeroCol);
+                    puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
                 }
                 break;
             case 4:
                 if (curCol < targetCol) {
                     // 当前位置在目标位置的右侧
-                    puzzle.restoreSwap(zeroRow, zeroCol - 1);
+                    puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
                 } else {
                     // 在同一列
-                    puzzle.restoreSwap(zeroRow + 1, zeroCol);
+                    puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
                 }
                 break;
             case 5:
-                puzzle.restoreSwap(zeroRow + 1, zeroCol);
+                puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
+                break;
             case 6:
                 // 当前位置在目标位置的左侧或同一列
-                puzzle.restoreSwap(zeroRow, zeroCol + 1);
+                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol + 1);
                 break;
             case 7:
                 // 当前位置在目标位置的左侧或同一列
-                puzzle.restoreSwap(zeroRow + 1, zeroCol);
+                puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
                 break;
         }
     }
@@ -264,13 +263,13 @@ public class Solution {
                 // 将目标元素归位
                 puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
                 // 将左边，左上移回去
-                puzzle.restoreSwap(puzzle.curM - 2, puzzle.curN - 2);
-                puzzle.restoreSwap(puzzle.curM - 1, puzzle.curN - 2);
+                puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
+                puzzle.restoreSwap(puzzle.zeroRow + 1, puzzle.zeroCol);
                 for (int j = puzzle.curN - 3; j >= 0; j--) {
-                    puzzle.restoreSwap(puzzle.curM - 1, j);
+                    puzzle.restoreSwap(puzzle.zeroRow, j);
                     System.out.println("re");
                 }
-                puzzle.restoreSwap(puzzle.curM - 2, 0);
+                puzzle.restoreSwap(puzzle.zeroRow - 1, puzzle.zeroCol);
             }
         }
         puzzle.curM--;
