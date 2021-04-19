@@ -1,10 +1,17 @@
 package com.example.bishe;
 
-public class Solution {
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.util.*;
+
+public class Solution2 {
 
     private final Puzzle puzzle;
 
-    public Solution(Puzzle puzzle) {
+    public Solution2(Puzzle puzzle) {
         this.puzzle = puzzle;
     }
 
@@ -46,7 +53,6 @@ public class Solution {
         return 0;
     }
 
-
     /**
      * 处理空格和目标滑块没有挨着的情况
      *
@@ -77,96 +83,94 @@ public class Solution {
         }
     }
 
+    class Grid {
+        int x;
+        int y;
+
+        boolean target;
+
+        List<Integer> path = new ArrayList<>();
+
+        public Grid(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Grid grid = (Grid) o;
+            return x == grid.x && y == grid.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y);
+        }
+
+        @Override
+        protected Grid clone() {
+            Grid grid = new Grid(this.x, this.y);
+            grid.path = new ArrayList<>(this.path);
+            return grid;
+        }
+
+        @Override
+        public String toString() {
+            return "Grid{" +
+                    "x=" + x +
+                    ", y=" + y +
+                    ", path=" + path +
+                    '}';
+        }
+    }
 
     public void bottomNormalMove(int curRow, int curCol, int targetRow, int targetCol) {
-        int direction = handleNeighbor(curRow, curCol);
-        if (direction == 0) {
-            bottomNotNeighborMove(curRow, curCol, targetCol - 1);
-            return;
-        }
-        int zeroRow = puzzle.zeroRow;
-        int zeroCol = puzzle.zeroCol;
-        switch (direction) {
-            case 1:
-                if (curCol > targetCol) {
-                    // 当前位置在目标位置的右侧
-                    puzzle.restoreSwap(zeroRow, zeroCol - 1);
-                } else {
-                    // 当前位置在目标位置的左侧或同一列
-                    puzzle.restoreSwap(zeroRow, zeroCol + 1);
-                }
+        int[][] directions = {
+                {-1, 0}, {1, 0}, {0, -1}, {0, 1}
+        };
+        Grid targetGrid = new Grid(targetRow, targetCol);
+        Grid startGrid = new Grid(puzzle.zeroRow, puzzle.zeroCol);
+        Queue<Grid> queue = new LinkedList<>();
+        queue.add(startGrid);
+        Set<Grid> set = new HashSet<>();
+        set.add(startGrid);
+        Grid curGrid = null;
+        while (!queue.isEmpty()) {
+             curGrid = queue.poll();
+            if (curGrid.target) {
+                System.out.println(curGrid);
                 break;
-            case 2:
-                puzzle.restoreSwap(zeroRow - 1, zeroCol);
-                break;
-            case 3:
-                if (curCol > targetCol) {
-                    // 当前位置在目标位置的右侧
-                    puzzle.restoreSwap(zeroRow, zeroCol + 1);
-                } else {
-                    // 当前位置在目标位置的右侧或同一列
-                    if (zeroRow < targetRow - 1) {
-                        // 空格不在倒数第二行
-                        puzzle.restoreSwap(zeroRow + 1, zeroCol);
-                    } else {
-                        puzzle.restoreSwap(zeroRow - 1, zeroCol);
+            }
+            for (int i = 0; i < directions.length; i++) {
+                int[] direction = directions[i];
+                if (valid(curGrid.x + direction[0], curGrid.y + direction[1], targetCol - 1)) {
+                    Grid newGrid = curGrid.clone();
+                    newGrid.x += direction[0];
+                    newGrid.y += direction[1];
+                    if (!set.contains(newGrid)) {
+                        newGrid.path.add(i);
+                        set.add(newGrid);
+                        queue.add(newGrid);
+                        if (newGrid.x == targetRow && newGrid.y== targetCol) {
+                            newGrid.target = true;
+                        }
                     }
                 }
-                break;
-            case 4:
-                if (curCol > targetCol) {
-                    // 当前位置在目标位置的右侧
-                    if (zeroRow < targetRow) {
-                        // 空格不在最后一行
-                        puzzle.restoreSwap(zeroRow + 1, zeroCol);
-                    } else {
-                        puzzle.restoreSwap(zeroRow - 1, zeroCol);
-                    }
-                } else if (curCol < targetCol) {
-                    // 当前位置在目标位置的右侧
-                    puzzle.restoreSwap(zeroRow, zeroCol - 1);
-                } else {
-                    // 在同一列
-                    puzzle.restoreSwap(zeroRow + 1, zeroCol);
-                }
-                break;
-            case 5:
-                if (curCol > targetCol) {
-                    // 当前位置在目标位置的右侧
-                    puzzle.restoreSwap(zeroRow + 1, zeroCol);
-                } else {
-                    // 当前位置在目标位置的左侧或同一列
-                    puzzle.restoreSwap(zeroRow, zeroCol + 1);
-                }
-                break;
-            case 6:
-                if (curCol > targetCol) {
-                    // 当前位置在目标位置的右侧
-                    puzzle.restoreSwap(zeroRow - 1, zeroCol);
-                } else {
-                    // 当前位置在目标位置的左侧或同一列
-                    puzzle.restoreSwap(zeroRow, zeroCol + 1);
-                }
-                break;
-            case 7:
-                if (curCol > targetCol) {
-                    // 当前位置在目标位置的右侧
-                    puzzle.restoreSwap(zeroRow, zeroCol - 1);
-                } else {
-                    // 当前位置在目标位置的左侧或同一列
-                    puzzle.restoreSwap(zeroRow + 1, zeroCol);
-                }
-                break;
-            case 8:
-                if (curCol >= targetCol) {
-                    // 当前位置在目标位置的右侧或同一列
-                    puzzle.restoreSwap(zeroRow, zeroCol - 1);
-                } else {
-                    // 当前位置在目标位置的左侧
-                    puzzle.restoreSwap(zeroRow - 1, zeroCol);
-                }
-                break;
+            }
         }
+        for (int index : curGrid.path) {
+            puzzle.restoreSwap(puzzle.zeroRow + directions[index][0], puzzle.zeroCol + directions[index][1]);
+        }
+
+    }
+
+    private boolean valid(int x, int y, int solvedCol) {
+        if (x < 0 || x >= puzzle.curM || y < 0 || y >= puzzle.curN) {
+            return false;
+        }
+        return x != puzzle.curM - 1 || y > solvedCol;
     }
 
     public void bottomLastMove(int curRow, int curCol) {
@@ -289,7 +293,6 @@ public class Solution {
                 break;
         }
     }
-
 
     public void solveLastRow() {
         int num = (puzzle.curM - 1) * puzzle.curN;
