@@ -2,6 +2,7 @@ package com.example.bishe;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -41,17 +42,16 @@ public class Puzzle {
     }
 
     public Puzzle() {
-        this.m = 4;
-        this.n = 4;
+        this.m = 3;
+        this.n = 6;
         this.curM = this.m;
         this.curN = this.n;
         this.initPath = new ArrayList<>();
         this.restorePath = new ArrayList<>();
         board = new int[][]{
-                {2, 0, 7, 3},
-                {1, 6, 8, 11},
-                {13, 9, 14, 10},
-                {12, 4, 5, 15}
+                {6, 1, 15, 4, 10, 5},
+                {14, 2, 0, 9, 8, 17},
+                {12, 13, 7, 3, 11, 16}
         };
         indexArr = new int[m * n][2];
         for (int i = 0; i < m; i++) {
@@ -59,8 +59,8 @@ public class Puzzle {
                 indexArr[board[i][j]] = new int[]{i, j};
             }
         }
-        zeroRow = 0;
-        zeroCol = 1;
+        zeroRow = 1;
+        zeroCol = 2;
 
     }
 
@@ -104,16 +104,15 @@ public class Puzzle {
         indexArr[num][1] = col;
     }
 
-
     public void swapZero(List<Integer> path, int i, int j) {
         if (i == zeroRow - 1) {
-            path.add(1);
+            path.add(0); // 空格往上移
         } else if (i == zeroRow + 1) {
-            path.add(2);
+            path.add(1); // 空格往下移
         } else if (j == zeroCol - 1) {
-            path.add(3);
+            path.add(2); // 空格往左移
         } else {
-            path.add(4);
+            path.add(3); // 空格往右移
         }
         int temp = board[i][j];
         setIndex(temp, zeroRow, zeroCol);
@@ -147,5 +146,42 @@ public class Puzzle {
         }
         System.out.println("--------------------------");
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Puzzle puzzle = (Puzzle) o;
+        return Arrays.equals(board, puzzle.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(board);
+    }
+
+    @Override
+    protected Puzzle clone() {
+        Puzzle puzzle = new Puzzle();
+        puzzle.m = this.m;
+        puzzle.n = this.n;
+
+        puzzle.board = new int[m][n];
+        puzzle.indexArr = new int[m * n][2];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                puzzle.board[i][j] = this.board[i][j];
+            }
+        }
+        for (int i = 0; i < m * n; i++) {
+            puzzle.indexArr[i][0] = this.indexArr[i][0];
+            puzzle.indexArr[i][1] = this.indexArr[i][1];
+        }
+        puzzle.zeroRow = this.zeroRow;
+        puzzle.zeroCol = this.zeroCol;
+        puzzle.restorePath = new ArrayList<>(this.restorePath);
+        return puzzle;
+    }
+
 
 }

@@ -3,8 +3,8 @@ package com.example.bishe;
 public class Client2 {
 
     public static void main(String[] args) {
-        Puzzle puzzle = new Puzzle();
-//        Puzzle puzzle = new Puzzle(4, 4);
+//        Puzzle puzzle = new Puzzle();
+        Puzzle puzzle = new Puzzle(4, 6);
         System.out.println("初始化完成:");
         puzzle.print();
         Solution2 solution = new Solution2(puzzle);
