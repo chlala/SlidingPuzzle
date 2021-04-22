@@ -67,7 +67,6 @@ public class Solution2 {
                     if (!set.contains(newGrid)) {
                         set.add(newGrid);
                         queue.add(newPuzzle);
-
                     }
                 }
             }
