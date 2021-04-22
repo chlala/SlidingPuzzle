@@ -7,8 +7,8 @@ public class Client {
         Puzzle puzzle = null;
 //        try {
 //            for (int i = 0; i < 8; i++) {
-                puzzle = new Puzzle(20, 20);
-//                puzzle = new Puzzle(4, 4);
+//                puzzle = new Puzzle();
+                puzzle = new Puzzle(1000, 1000);
                 System.out.println("初始化完成:");
                 puzzle.print();
                 Solution solution = new Solution(puzzle);

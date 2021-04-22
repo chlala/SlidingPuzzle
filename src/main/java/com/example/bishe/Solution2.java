@@ -188,94 +188,125 @@ public class Solution2 {
         puzzle.restoreSwap(puzzle.zeroRow, puzzle.zeroCol - 1);
     }
 
-    class Solution {
-        public int slidingPuzzle(int[][] board) {
-            int R = board.length, C = board[0].length;
-            int sr = 0, sc = 0;
-            search:
-            for (sr = 0; sr < R; sr++)
-                for (sc = 0; sc < C; sc++)
-                    if (board[sr][sc] == 0)
-                        break search;
+    class Node implements Comparable<Node> {
+        Puzzle puzzle;
+        String boardStr;
+        int depth;
+        int f;
 
-            int[][] directions = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-            Queue<Node> queue = new ArrayDeque<>();
-            Node start = new Node(board, sr, sc, 0);
-            queue.add(start);
+        public Node(Puzzle puzzle, int depth) {
+            this.puzzle = puzzle;
+            this.depth = depth;
+            this.boardStr = changeBoardToString();
+            calculate();
+        }
 
-            Set<String> seen = new HashSet();
-            seen.add(start.boardstring);
-
-            String target = Arrays.deepToString(new int[][]{{0, 1, 2}, {3, 4, 5}});
-
-            while (!queue.isEmpty()) {
-                Node node = queue.remove();
-                if (node.boardstring.equals(target))
-                    return node.depth;
-
-                for (int[] di : directions) {
-                    int nei_r = di[0] + node.zero_r;
-                    int nei_c = di[1] + node.zero_c;
-
-                    if ((Math.abs(nei_r - node.zero_r) + Math.abs(nei_c - node.zero_c) != 1) ||
-                            nei_r < 0 || nei_r >= R || nei_c < 0 || nei_c >= C)
-                        continue;
-
-                    int[][] newboard = new int[R][C];
-                    int t = 0;
-                    for (int[] row : node.board)
-                        newboard[t++] = row.clone();
-                    newboard[node.zero_r][node.zero_c] = newboard[nei_r][nei_c];
-                    newboard[nei_r][nei_c] = 0;
-
-                    Node nei = new Node(newboard, nei_r, nei_c, node.depth + 1);
-                    if (seen.contains(nei.boardstring))
-                        continue;
-                    queue.add(nei);
-                    seen.add(nei.boardstring);
+        String changeBoardToString() {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < puzzle.curM; i++) {
+                for (int j = 0; j < puzzle.curN; j++) {
+                    sb.append(puzzle.board[i][j]).append(' ');
                 }
             }
+            return sb.toString();
+        }
 
-            return -1;
+        void calculate() {
+            for (int i = 0; i < puzzle.curM; i++) {
+                for (int j = 0; j < puzzle.curN; j++) {
+                    if (puzzle.board[i][j] != 0) {
+                        int[] targetIndex = puzzle.getIndex(puzzle.board[i][j]);
+                        // 计算在一维数组中存在的下标，从0开始
+                        f += Math.abs(i - targetIndex[0]) + Math.abs(j - targetIndex[1]);
+                    }
+                }
+            }
+            f /= 2;
+//            f += depth;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            return this.f - o.f;
         }
     }
 
-    class Node {
-        int[][] board;
-        String boardstring;
-        int zero_r;
-        int zero_c;
-        int depth;
 
-        Node(int[][] B, int r, int c, int d) {
-            board = B;
-            boardstring = Arrays.deepToString(board);
-            zero_r = r;
-            zero_c = c;
-            depth = d;
+    /**
+     * 处理2*2或者2*3
+     */
+    private void solveFixedSize() {
+        int[][] directions = {
+                {-1, 0}, {1, 0}, {0, -1}, {0, 1}
+        };
+        Set<String> set = new HashSet<>();
+        Queue<Node> queue = new PriorityQueue<>();
+        Puzzle startPuzzle = puzzle.clone();
+        Node start = new Node(startPuzzle, 0);
+        queue.add(start);
+        set.add(start.boardStr);
+        String targetString = getTargetString();
+        int size = puzzle.restorePath.size();
+        Node curNode = null;
+        while (!queue.isEmpty()) {
+            curNode = queue.poll();
+            if (targetString.equals(curNode.boardStr)) {
+                System.out.println("成功");
+                break;
+            }
+            handleNeighbor(curNode, queue, set, directions);
+        }
+        for (int i = size; i < curNode.puzzle.restorePath.size(); i++) {
+            puzzle.restoreSwap(puzzle.zeroRow + directions[curNode.puzzle.restorePath.get(i)][0], puzzle.zeroCol + directions[curNode.puzzle.restorePath.get(i)][1]);
         }
     }
 
-
-    private void solve2multi3() {
-
-    }
-
-
-    public void solve() {
-        while (puzzle.curM * puzzle.curN > 6) {
-            if (puzzle.curM > puzzle.curN) {
-                solveLastRow();
-                puzzle.curM--;
-            } else {
-                solveLastCol();
-                puzzle.curN--;
+    private void handleNeighbor(Node node, Queue<Node> queue, Set<String> set, int[][] directions) {
+        for (int[] direction : directions) {
+            int tempRow = node.puzzle.zeroRow + direction[0];
+            int tempCol = node.puzzle.zeroCol + direction[1];
+            if (tempRow >= 0 && tempRow < puzzle.curM && tempCol >= 0 && tempCol < puzzle.curN) {
+                Puzzle newPuzzle = node.puzzle.clone();
+                newPuzzle.swapZero(newPuzzle.restorePath, tempRow, tempCol);
+                Node newNode = new Node(newPuzzle, node.depth + 1);
+                if (!set.contains(newNode.boardStr)) {
+                    set.add(newNode.boardStr);
+                    queue.add(newNode);
+                }
             }
         }
+    }
 
-//        System.out.println("处理2*2");
-//        solve2n();
+    private String getTargetString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < puzzle.curM; i++) {
+            for (int j = 0; j < puzzle.curN; j++) {
+                sb.append(i * puzzle.n + j).append(' ');
+            }
+        }
+        return sb.toString();
+    }
+
+    public void solve() {
+//        while (puzzle.curM * puzzle.curN > 6) {
+//            if (puzzle.curM >= puzzle.curN) {
+//                solveLastRow();
+//                puzzle.curM--;
+//            } else {
+//                solveLastCol();
+//                puzzle.curN--;
+//            }
+//        }
+        while (puzzle.curM > 3) {
+            solveLastRow();
+            puzzle.curM--;
+        }
+        while (puzzle.curN > 2) {
+            solveLastCol();
+            puzzle.curN--;
+        }
+        System.out.println("终极");
+        solveFixedSize();
     }
 }
-
 

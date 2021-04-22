@@ -5,7 +5,8 @@ public class Client2 {
     public static void main(String[] args) {
 //        Puzzle puzzle = new Puzzle();
 //        for (int i = 0; i < 10; i++) {
-            Puzzle puzzle = new Puzzle(10, 10);
+//            Puzzle puzzle = new Puzzle();
+            Puzzle puzzle = new Puzzle(20,20);
             System.out.println("初始化完成:");
             puzzle.print();
             Solution2 solution = new Solution2(puzzle);
@@ -15,6 +16,8 @@ public class Client2 {
 
             System.out.println("打乱步数:" + puzzle.initPath.size());
             System.out.println("还原步数:" + puzzle.restorePath.size());
+            System.out.println(puzzle.curM);
+            System.out.println(puzzle.curN);
 //        }
 //        System.out.println("***********************************");
     }

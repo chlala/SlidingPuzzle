@@ -42,16 +42,17 @@ public class Puzzle {
     }
 
     public Puzzle() {
-        this.m = 3;
-        this.n = 6;
+        this.m = 4;
+        this.n = 4;
         this.curM = this.m;
         this.curN = this.n;
         this.initPath = new ArrayList<>();
         this.restorePath = new ArrayList<>();
         board = new int[][]{
-                {6, 1, 15, 4, 10, 5},
-                {14, 2, 0, 9, 8, 17},
-                {12, 13, 7, 3, 11, 16}
+                {1, 5, 2, 3},
+                {4, 6, 10, 7},
+                {13, 12, 11, 15},
+                {8, 14, 9, 0}
         };
         indexArr = new int[m * n][2];
         for (int i = 0; i < m; i++) {
@@ -59,8 +60,8 @@ public class Puzzle {
                 indexArr[board[i][j]] = new int[]{i, j};
             }
         }
-        zeroRow = 1;
-        zeroCol = 2;
+        zeroRow = 3;
+        zeroCol = 3;
 
     }
 
@@ -122,11 +123,9 @@ public class Puzzle {
         zeroCol = j;
     }
 
-
     private void initSwap(int i, int j) {
         swapZero(initPath, i, j);
     }
-
 
     public void restoreSwap(int i, int j) {
         swapZero(restorePath, i, j);
@@ -165,6 +164,8 @@ public class Puzzle {
         Puzzle puzzle = new Puzzle();
         puzzle.m = this.m;
         puzzle.n = this.n;
+        puzzle.curM = this.curM;
+        puzzle.curN = this.curN;
 
         puzzle.board = new int[m][n];
         puzzle.indexArr = new int[m * n][2];
