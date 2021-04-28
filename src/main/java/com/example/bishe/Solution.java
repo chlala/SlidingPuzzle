@@ -607,12 +607,12 @@ public class Solution {
         int[][] rotateDirection = new int[][]{
                 {1, 0}, {0, 1}, {-1, 0}, {0, -1}
         };
-        int index;
+        int index = 0;
         if (puzzle.zeroRow == 1 && puzzle.zeroCol == 0) {
             index = 1;
         } else if (puzzle.zeroRow == 1 && puzzle.zeroCol == 1) {
             index = 2;
-        } else {
+        } else if (puzzle.zeroRow == 0 && puzzle.zeroCol == 1){
             index = 3;
         }
         while (!(puzzle.board[0][0] == 0 && puzzle.board[0][1] == 1

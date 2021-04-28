@@ -24,6 +24,25 @@ public class Puzzle {
     };
 
     public Puzzle(int m, int n) {
+        commonInit(m, n);
+
+        init();
+        initMove(m * n * 5);
+        for (int i = 0; i < m; i++) {
+            System.arraycopy(board[i], 0, initBoard[i], 0, this.n);
+        }
+    }
+
+    public Puzzle(int m, int n, int times) {
+        commonInit(m, n);
+        init();
+        initMove(m * n * times);
+        for (int i = 0; i < m; i++) {
+            System.arraycopy(board[i], 0, initBoard[i], 0, this.n);
+        }
+    }
+
+    private void commonInit(int m, int n) {
         this.m = m;
         this.n = n;
         this.curM = m;
@@ -33,26 +52,19 @@ public class Puzzle {
         board = new int[m][n];
         indexArr = new int[m * n][2];
         initBoard = new int[m][n];
-
-        init();
-        initMove(m * n * 7);
-        for (int i = 0; i < m; i++) {
-            System.arraycopy(board[i], 0, initBoard[i], 0, this.n);
-        }
     }
 
+
     public Puzzle() {
-        this.m = 4;
-        this.n = 4;
+        this.m = 2;
+        this.n = 2;
         this.curM = this.m;
         this.curN = this.n;
         this.initPath = new ArrayList<>();
         this.restorePath = new ArrayList<>();
         board = new int[][]{
-                {1, 5, 2, 3},
-                {4, 6, 10, 7},
-                {13, 12, 11, 15},
-                {8, 14, 9, 0}
+                {0, 3},
+                {1, 2}
         };
         indexArr = new int[m * n][2];
         for (int i = 0; i < m; i++) {
@@ -60,8 +72,8 @@ public class Puzzle {
                 indexArr[board[i][j]] = new int[]{i, j};
             }
         }
-        zeroRow = 3;
-        zeroCol = 3;
+        zeroRow = 0;
+        zeroCol = 0;
 
     }
 
@@ -129,7 +141,7 @@ public class Puzzle {
 
     public void restoreSwap(int i, int j) {
         swapZero(restorePath, i, j);
-        print();
+//        print();
     }
 
     public void print() {

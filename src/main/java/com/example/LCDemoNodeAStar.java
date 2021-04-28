@@ -128,10 +128,10 @@ public class LCDemoNodeAStar {
 
     public static void main(String[] args) {
         int[][] board = {
-                {1,2,3, 12},
-                {4,6,5, 13},
-                {9,8,7, 14},
-                {11, 0, 10, 15}
+                {5,	3,	7,	4},
+                        {1,	2,	0,	10},
+                { 13,	12,	6,	11},
+                        {8,	14,	9,	15}
         };
         LCDemoNodeAStar lcDemoString1 = new LCDemoNodeAStar();
         System.out.println(lcDemoString1.slidingPuzzle(board));
